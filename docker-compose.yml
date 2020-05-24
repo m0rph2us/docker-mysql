@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql-master:
+    image: mysql:5.7.22
+    volumes:
+      - ./conf/master:/etc/mysql/conf.d
+      - ./init/mysql/master:/init-mysql
+      - ./init/db:/init-db
+      - ./seeding.sh:/docker-entrypoint-initdb.d/seeding.sh
+      #- ./volume/mysql-master:/var/lib/mysql
+    environment:
+      #- TZ=Asia/Seoul
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - '33060:3306'
+
+  mysql-slave:
+    image: mysql:5.7.22
+    volumes:
+      - ./conf/slave:/etc/mysql/conf.d
+      - ./init/mysql/slave:/init-mysql
+      - ./init/db:/init-db
+      - ./seeding.sh:/docker-entrypoint-initdb.d/seeding.sh
+      #- ./volume/mysql-slave:/var/lib/mysql
+    depends_on:
+      - mysql-master
+    environment:
+      #- TZ=Asia/Seoul
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - '33070:3306'
